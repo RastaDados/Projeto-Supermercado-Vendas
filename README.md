@@ -507,3 +507,45 @@ Valores: Entregas no Prazo
 
 <b>Gráfico de Barras Clusterizado</b>
 
+Exibe as entregas no prazo VS as entregas totais.
+
+Medida DAX contida no gráfico:
+
+```python
+Entregas No Prazo = 
+CALCULATE(
+    COUNTROWS('Delivery'),
+    Delivery[released_date] <= Delivery[received_date]
+)
+```
+
+```python
+Total Entregas = 
+COUNTROWS('Delivery')
+```
+
+Eixo Y: Data (Hierarquia de Data)
+
+Eixo X: Entregas no Prazo,  Total Entregas
+
+<hr>
+
+<b>Matriz</b>
+
+Exibe o Método de Entrega, Total Entregas, Custo Total da Entrega, Entregas no Prazo, Percentual de Entregas no Prazo, ´Custo Médio por Entrega filtrado pela data.
+
+Linhas: Data (Hierarquia de Data)
+
+Colunas: Método Entrega, Total Entrgas, Custo Total da Entrega, Entregas no Prazo, Percentual de Entregas no Prazo
+
+<hr>
+
+<h1>Considerações Técnicas</h1>
+
+<b>Preparação dos Dados:</b>
+
+Foram realizadas transformações para corrigir tipos de dados, tratamento de valores nulos, extração de caracteres, transformação de caracteres, tratamento de vazios.
+
+<hr>
+
+
