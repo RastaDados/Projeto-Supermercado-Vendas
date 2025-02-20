@@ -278,3 +278,232 @@ DIVIDE(vAtual - vAnt, vAnt, 0)
 
 <h2>Detalhes de Clientes</h2>
 
+- <b>Objetivo:</b> Apresenta um panorama geral dos detalhes sobre os clientes.
+
+- Gráficos e Elementos contidos na página:
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe a Quantidade de Clientes
+
+Campo: Contagem de user_id
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe os Clientes do Período Atual
+
+Medida DAX contida no gráfico:
+
+```python
+Clientes Periodo Atual = 
+ DISTINCTCOUNT('Purchase_Details'[user_id])
+```
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe os clientes do ano anterior
+
+Medida DAX contida no gráfico:
+
+```python
+Clientes LY = 
+CALCULATE(
+    [Clientes Periodo Atual],
+    //DATEADD(dCalendario[Data]; -1; YEAR)
+    SAMEPERIODLASTYEAR(dCalendario[Data])
+)
+```
+
+<hr>
+
+<b>% Clientes YoY</b>
+
+Exibe a % de clientes em relaçãom ao ano passado.
+
+Medida DAX presente no gráfico:
+
+```python
+% YOY Clientes = 
+VAR vAtual = [Clientes Periodo Atual]
+VAR vAnt   = CALCULATE([Clientes Periodo Atual], SAMEPERIODLASTYEAR(dCalendario[Data]))
+RETURN
+DIVIDE(vAtual - vAnt, vAnt, 0)
+```
+
+<hr>
+
+<br>Matriz</b>
+
+Exibe a Raceita Total, Ticket Médio, Qtde Vendida, Clientes Atuais, Clientes LY, %YoY Clientes dos clientes filtrado pela data.
+
+Medidas DAX contidas no gráfico:
+
+```python
+% YOY Clientes = 
+VAR vAtual = [Clientes Periodo Atual]
+VAR vAnt   = CALCULATE([Clientes Periodo Atual], SAMEPERIODLASTYEAR(dCalendario[Data]))
+RETURN
+DIVIDE(vAtual - vAnt, vAnt, 0)
+```
+
+```python
+Clientes LY = 
+CALCULATE(
+    [Clientes Periodo Atual],
+    //DATEADD(dCalendario[Data]; -1; YEAR)
+    SAMEPERIODLASTYEAR(dCalendario[Data])
+)
+```
+
+```python
+Clientes Periodo Atual = 
+ DISTINCTCOUNT('Purchase_Details'[user_id])
+```
+
+```python
+Quantidade De Vendas = 
+COUNTROWS(Payout_Discount)
+```
+
+```python
+Receita Total = SUM('Payout_Discount'[total_purchase_after_discount])
+```
+
+```python
+ Ticket Médio = 
+ DIVIDE(
+    [Receita Total],
+    [Transações Total],
+    0
+)
+```
+
+<hr>
+
+<h2>Visão Geral das Entregas</h2>
+
+- <b>Objetivo:</b> Apresenta um panorama geral das entregas realizadas pela loja.
+
+- Gráficos e Elementos contidos na página:
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe o Total de Entregas realizadas.
+
+Medida DAX presente no gráfico:
+
+```python
+Total Entregas = 
+COUNTROWS('Delivery')
+```
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe o custo médio das entregas.
+
+Medida DAX presente no gráfico:
+
+```python
+Custo Médio Por Entrega = 
+DIVIDE(
+    SUM(Delivery[shipping_cost]),
+    [Total Entregas],
+    0
+)
+```
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe as entregas no prazo.
+
+Medida DAX presente no gráfico:
+
+```python
+Entregas No Prazo = 
+CALCULATE(
+    COUNTROWS('Delivery'),
+    Delivery[released_date] <= Delivery[received_date]
+)
+```
+
+<hr>
+
+<b>Cartão</b>
+
+Exibe a % de entregas realizas dentro do prazo de entrega estimado pela loja.
+
+Medida DAX presente no gráfico:
+
+```pytthon
+Percentual Entregas No Prazo = 
+DIVIDE(
+    [Entregas No Prazo],
+    [Total Entregas], 
+    0
+)
+```
+
+<hr>
+
+<b>Gráfico de colunas clusterizado</b>
+
+Exibe o tempo estimado comparado com o tempo médio da entrega.
+
+Medida DAX contida no gráfico:
+
+```python
+Tempo Medio Entrega = 
+AVERAGEX(
+    'Delivery',
+    DATEDIFF(Delivery[released_date], Delivery[received_date], DAY)
+)
+```
+
+```python
+Tempo Médio Estimado Entrega = 
+AVERAGEX(
+    'Delivery',
+    DATEDIFF(Delivery[released_date], Delivery[estimated_delivery_date], DAY)
+)
+```
+
+Eixo X: Data (Hierarquia de Datas)
+
+Eixo Y: Tempo Médio, Tempo Estimado
+
+<hr>
+
+<b>Gráfico de Pizza</b>
+
+Exibe as entregas realizadas dentro do prazo pelo tipo de entrega escolhida pelo cliente.
+
+Medida DAX contida no gráfico:
+
+```python
+Entregas No Prazo = 
+CALCULATE(
+    COUNTROWS('Delivery'),
+    Delivery[released_date] <= Delivery[received_date]
+)
+```
+
+Legenda: Método Entrega
+
+Valores: Entregas no Prazo
+
+<hr>
+
+<b>Gráfico de Barras Clusterizado</b>
+
